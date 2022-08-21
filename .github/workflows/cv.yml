@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
 
   workflow_dispatch:
 
@@ -20,18 +20,12 @@ jobs:
         with:
           name: CV
           path: cv.pdf
-      - name: Create pull request
-        uses: peter-evans/create-pull-request@v3
-        with: 
-          commit-message: pdflatex build
-          branch: pdflatex_build
-          title: '[CI] pdflatex build'
       - name: Get Time
         id: time
         uses: nanzm/get-time-action@v1.1
         with:
           timeZone: -7
-          format: 'YYYY-MM-DD-HH-mm-ss'
+          format: "YYYY-MM-DD-HH-mm-ss"
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
@@ -46,6 +40,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./cv.pdf
-          asset_name:  cv-${{ steps.time.outputs.time }}.pdf
+          asset_name: cv.pdf
           asset_content_type: application/pdf
-          
