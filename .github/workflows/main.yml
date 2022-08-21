@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [ "master" ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install texlive
+        run: sudo apt install texlive-base texlive-latex-extra
+      - name: Build pdf
+        run: pdflatex cv.tex -o output/cv.pdf
+      - name: Uploading artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: CV
+          path: cv.pdf
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v3
+        with: 
+          commit-message: pdflatex build
+          branch: pdflatex_build
+          title: '[CI] pdflatex build'
+      - name: Get Time
+        id: time
+        uses: nanzm/get-time-action@v1.1
+        with:
+          timeZone: -7
+          format: 'YYYY-MM-DD-HH-mm-ss'
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: CV compiled on ${{ steps.time.outputs.time }}
+          tag_name: ${{ steps.time.outputs.time }}
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./cv.pdf
+          asset_name:  cv-${{ steps.time.outputs.time }}.pdf
+          asset_content_type: application/pdf
+          
