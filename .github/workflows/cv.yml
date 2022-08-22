@@ -14,12 +14,19 @@ jobs:
       - name: Install texlive
         run: sudo apt install texlive-base texlive-latex-extra
       - name: Build pdf
-        run: pdflatex cv.tex -o output/cv.pdf
-      - name: Uploading artifact
+        run: |
+          pdflatex cv.tex -o output/cv.pdf
+          pdflatex excerpt.tex -o output/excerpt.pdf
+      - name: Uploading artifact (CV)
         uses: actions/upload-artifact@v2
         with:
           name: CV
           path: cv.pdf
+      - name: Uploading artifact (excerpt)
+        uses: actions/upload-artifact@v2
+        with:
+          name: CV-excerpt
+          path: excerpt.pdf
       - name: Get Time
         id: time
         uses: nanzm/get-time-action@v1.1
@@ -32,8 +39,7 @@ jobs:
         with:
           name: CV compiled on ${{ steps.time.outputs.time }}
           tag_name: ${{ steps.time.outputs.time }}
-      - name: Upload Release Asset
-        id: upload-release-asset
+      - name: Upload Release Asset (CV)
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -41,4 +47,13 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./cv.pdf
           asset_name: cv.pdf
+          asset_content_type: application/pdf
+      - name: Upload Release Asset (CV) (excerpt)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./excerpt.pdf
+          asset_name: cv-excerpt.pdf
           asset_content_type: application/pdf
