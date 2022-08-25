@@ -11,12 +11,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Install texlive
-        run: sudo apt install texlive-base texlive-latex-extra
-      - name: Build pdf
-        run: |
-          pdflatex cv.tex -o output/cv.pdf
-          pdflatex excerpt.tex -o output/excerpt.pdf
+      - name: Build cv.pdf
+        uses: antaljanosbenjamin/compile-latex@v1.0.0
+        with:
+          file: cv.tex
+          args: -pdf
+      - name: Build excerpt.pdf
+        uses: antaljanosbenjamin/compile-latex@v1.0.0
+        with:
+          file: excerpt.tex
+          args: -pdf
       - name: Uploading artifact (CV)
         uses: actions/upload-artifact@v2
         with:
